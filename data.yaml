@@ -1,0 +1,23 @@
+#paths to the image folders (Make sure to use relative so it doesn't break when trying to run on someone elses machine.)
+train: ../train
+val: ../valid
+test: ../test
+
+
+nc: 14
+
+names:
+  - banana-bag # 0
+  - banana # 1
+  - blackberries # 2
+  - raspberry # 3
+  - lemon-bag # 4
+  - lemon # 5
+  - grapes-bag # 6
+  - grapes # 7
+  - tomato-bag # 8
+  - tomato # 9
+  - apple-bag # 10 
+  - apple # 11
+  - chili-bag  # 12
+  - chili # 13
