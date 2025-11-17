@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env py
 """
 YOLOv11n Integration Module
 This module provides an API wrapper for the YOLOv11n model to be called from the Node.js server.
@@ -22,7 +22,7 @@ class YOLOIntegration:
         Args:
             model_path: Path to the YOLO model weights file
         """
-        self.model_path = model_path or 'runs/train/exp2/weights/best.pt'
+        self.model_path = model_path or 'exp2/weights/best.pt' # runs/train/exp2/weights/best.pt orignal
         self.model = None
         self.load_model()
     
@@ -210,9 +210,9 @@ def main():
     
     # Test with sample images (you can modify these paths)
     test_images = [
-        "test/24_5_raspberry - 10.jpg",
-        "test/9_3_lemon_wob_37.jpg", 
-        "test/15_6_banana_wob_38.jpg"
+        "C:/Users/jedna/Downloads/Awesome-Raspberry-1221x1080.jpg", 
+        "C:/Users/jedna/Downloads/Raspberry.webp", 
+        "C:/Users/jedna/Downloads/Banana.jpg"
     ]
     
     # Filter existing images

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env py
 """
 YOLO API Server
 A Flask API server that provides endpoints for YOLO object detection.
@@ -31,8 +31,8 @@ def initialize_yolo():
     try:
         # Try to find the model file
         model_paths = [
-            'runs/train/exp2/weights/best.pt',  # The custom trained model
-            '../runs/train/exp2/weights/best.pt',  # Relative path from food-detection-upload folder
+            './exp2/weights/best.pt',  # The custom trained model
+            '../exp2/weights/best.pt',  # Relative path from food-detection-upload folder
             '../../runs/train/exp2/weights/best.pt',  # Two levels up
             'yolo11n.pt'  # Fallback to YOLOv11n. Will be inaccurate or might not work.
         ]
@@ -53,6 +53,15 @@ def initialize_yolo():
     except Exception as e:
         print(f"Error initializing YOLO: {e}")
         yolo_integration = None
+#testing above /health:
+
+@app.route('/', methods=['GET'])
+def index():
+    return jsonify({
+        "status": "running",
+        "message": "YOLO API is active. Use /health, /predict, etc."
+    })
+
 
 @app.route('/health', methods=['GET'])
 def health_check():

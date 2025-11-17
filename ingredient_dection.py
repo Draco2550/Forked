@@ -18,8 +18,10 @@ from ultralytics import YOLO
 #         device=0)
 #     print(metrics.box.map50)      # mAP@0.5
 
-model = YOLO('runs/train/exp2/weights/best.pt')
-img_filepath_list = ["test/24_5_raspberry - 10.jpg","test/9_3_lemon_wob_37.jpg", "test/15_6_banana_wob_38.jpg"]
+model = YOLO('exp2/weights/best.pt')
+
+#img_filepath_list = ["test/24_5_raspberry - 10.jpg","test/9_3_lemon_wob_37.jpg", "test/15_6_banana_wob_38.jpg"]
+img_filepath_list = ["C:/Users/jedna/Downloads/Awesome-Raspberry-1221x1080.jpg", "C:/Users/jedna/Downloads/Raspberry.webp", "C:/Users/jedna/Downloads/Banana.jpg"]
 results = model.predict(img_filepath_list, conf=0.7, iou=0.3)
 
 img_class_names = set()

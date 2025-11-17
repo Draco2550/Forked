@@ -7,7 +7,9 @@ const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const YOLO_API_URL = process.env.YOLO_API_URL || 'http://localhost:5000';
+// const YOLO_API_URL = process.env.YOLO_API_URL || 'http://localhost:5000';
+const YOLO_API_URL = process.env.YOLO_API_URL || 'http://127.0.0.1:5000';
+
 
 // Middleware
 app.use(cors());
