@@ -1,9 +1,6 @@
 # Forked
-An AI-powered app that scans fridge or ingredient images to suggest goal-aligned meals—helping users eat smarter based on their fitness and nutrition targets.
-
-# Food Detection Image Upload Website
-
-A mobile-responsive website for uploading ingredient images to a locally hosted object detection model. The website provides an intuitive interface for users to upload multiple images, preview them, and send them to the local object detection model.
+An AI-powered website that scans fridge or ingredient images to suggest goal-aligned meals—helping users eat smarter based on their fitness and nutrition targets.
+The mobile-responsive website for uploading ingredient images to a locally hosted object detection model. The website provides an intuitive interface for users to upload multiple images, preview them, and send them to the local object detection model.
 
 ## Features
 
