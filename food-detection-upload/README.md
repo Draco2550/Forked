@@ -4,13 +4,14 @@ A mobile-responsive website for uploading food images to a locally hosted object
 
 ## Features
 
-- 📱 **Mobile-Responsive Design**: Optimized for both desktop and mobile devices
-- 🖼️ **Multiple Image Upload**: Support for uploading multiple images at once
-- 🎨 **Modern UI**: Clean, intuitive interface with drag-and-drop functionality
-- 📊 **Progress Tracking**: Real-time upload progress indicators
-- 🗂️ **Image Management**: Preview, remove individual images, or clear all
-- 🔄 **File Processing**: Automatic image resizing and optimization
-- 📁 **File Path Storage**: Maintains a list of uploaded file paths for your model
+-  **Mobile-Responsive Design**: Optimized for both desktop and mobile devices
+-  **Multiple Image Upload**: Support for uploading multiple images at once
+-  **Modern UI**: Clean, intuitive interface with drag-and-drop functionality
+-  **Progress Tracking**: Real-time upload progress indicators
+-  **Image Management**: Preview, remove individual images, or clear all
+-  **File Processing**: Automatic image resizing and optimization
+-  **File Path Storage**: Maintains a list of uploaded file paths for your model
+-  **AI Recipe Generation**: Automatically generates recipes from detected ingredients using the deepseek-r1 LLM on Ollama
 
 ## Quick Start
 
@@ -18,6 +19,9 @@ A mobile-responsive website for uploading food images to a locally hosted object
 
 - Node.js (version 14 or higher)
 - npm or yarn
+- Python 3.7+ (for YOLO API server and recipe generation)
+- Ollama installed and running locally (for recipe generation)
+- An Ollama model installed (e.g., `deepseek-r1`, or `qwen3`)
 
 ### Installation
 
@@ -86,9 +90,76 @@ C:\Users\jedna\food-detection-upload\
 - **GET** `/api/health`
 - **Response**: Server status and file count
 
+### Generate Recipes
+- **POST** `/api/generate-recipes`
+- **Body**: JSON with `ingredients` array and optional `num_recipes` (default: 3)
+- **Response**: JSON with generated recipes from Ollama LLM
+
+### Check Ollama Health
+- **GET** `/api/ollama-health`
+- **Response**: Ollama availability and model information
+
 ## Integration with Object Detection Model
 
 The uploaded images are stored in the `uploads/` directory with unique filenames. The file paths are maintained in the server's memory and can be accessed via the API endpoints.
+
+## Recipe Generation with Ollama
+
+After detecting ingredients in uploaded images, the system automatically generates recipe suggestions using a local Ollama LLM.
+
+### Setup Ollama
+
+1. **Install Ollama**: Download and install from [ollama.ai](https://ollama.ai)
+
+2. **Pull a model** (choose one):
+   ```bash
+   ollama pull llama2
+   # or
+   ollama pull mistral
+   # or
+   ollama pull llama3
+   ```
+
+3. **Start Ollama** (if not running as a service):
+   ```bash
+   ollama serve
+   ```
+
+### Configuration
+
+The recipe generator uses environment variables for configuration:
+
+- `OLLAMA_URL`: Ollama API URL (default: `http://localhost:11434`)
+- `OLLAMA_MODEL`: Model name to use (default: `llama2`)
+
+Set these in your environment or modify `yolo_api_server.py`:
+
+```python
+ollama_url = os.getenv('OLLAMA_URL', 'http://localhost:11434')
+ollama_model = os.getenv('OLLAMA_MODEL', 'llama2')
+```
+
+### How It Works
+
+1. User uploads food images
+2. YOLO model detects ingredients in the images
+3. Unique ingredients are extracted from detections
+4. Ingredients are sent to Ollama with a recipe generation prompt
+5. Generated recipes are displayed on the website
+
+### Python Dependencies
+
+Install Python dependencies for the YOLO API server:
+
+```bash
+pip install -r requirements.txt
+```
+
+This includes:
+- `ultralytics` - YOLO model
+- `flask` - API server
+- `requests` - Ollama API communication
+- Other dependencies
 
 ### Example Integration
 
@@ -163,6 +234,12 @@ Update `server.js` to:
    - Check browser console for errors
    - Verify file paths are correct
    - Ensure images are valid format
+
+4. **Recipe generation fails**
+   - Ensure Ollama is running: `ollama serve`
+   - Verify the model is installed: `ollama list`
+   - Check Ollama health: `GET /api/ollama-health`
+   - Verify Ollama URL and model name in configuration
 
 ### Debug Mode
 

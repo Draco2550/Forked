@@ -18,12 +18,29 @@ import time
 # Add the parent directory to the path to import the YOLO integration
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from yolo_integration import YOLOIntegration
+from ollama_recipe_generator import OllamaRecipeGenerator
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 # Global YOLO integration instance
 yolo_integration = None
+
+# Global Ollama recipe generator instance
+recipe_generator = None
+
+def initialize_recipe_generator():
+    """Initialize the Ollama recipe generator"""
+    global recipe_generator
+    try:
+        # Get Ollama settings from environment variables or use defaults
+        ollama_url = os.getenv('OLLAMA_URL', 'http://localhost:11434')
+        ollama_model = os.getenv('OLLAMA_MODEL', 'qwen3:4b')
+        recipe_generator = OllamaRecipeGenerator(base_url=ollama_url, model=ollama_model)
+        print(f"Ollama recipe generator initialized with model: {ollama_model}")
+    except Exception as e:
+        print(f"Error initializing recipe generator: {e}")
+        recipe_generator = None
 
 def initialize_yolo():
     """Initialize the YOLO integration in a separate thread"""
@@ -134,6 +151,47 @@ def model_info():
         'class_names': list(yolo_integration.model.names.values()) if yolo_integration.model else []
     })
 
+@app.route('/generate_recipes', methods=['POST'])
+def generate_recipes():
+    """Generate recipes from a list of ingredients using Ollama"""
+    try:
+        data = request.get_json()
+        ingredients = data.get('ingredients', [])
+        num_recipes = data.get('num_recipes', 3)
+        
+        if not ingredients:
+            return jsonify({'error': 'ingredients list is required'}), 400
+        
+        if recipe_generator is None:
+            # Try to initialize if not already done
+            initialize_recipe_generator()
+            if recipe_generator is None:
+                return jsonify({'error': 'Recipe generator not available'}), 500
+        
+        result = recipe_generator.generate_recipe(ingredients, num_recipes)
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/ollama_health', methods=['GET'])
+def ollama_health():
+    """Check if Ollama is available"""
+    if recipe_generator is None:
+        initialize_recipe_generator()
+        if recipe_generator is None:
+            return jsonify({
+                'available': False,
+                'error': 'Recipe generator not initialized'
+            }), 500
+    
+    is_available = recipe_generator.check_ollama_available()
+    return jsonify({
+        'available': is_available,
+        'model': recipe_generator.model,
+        'base_url': recipe_generator.base_url
+    })
+
 def run_yolo_api_server(port=5000):
     """Run the YOLO API server"""
     print(f"Starting YOLO API server on port {port}...")
@@ -144,6 +202,9 @@ if __name__ == '__main__':
     yolo_thread = threading.Thread(target=initialize_yolo)
     yolo_thread.daemon = True
     yolo_thread.start()
+    
+    # Initialize recipe generator
+    initialize_recipe_generator()
     
     # Start the Flask server
     run_yolo_api_server()

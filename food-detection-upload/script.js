@@ -262,6 +262,11 @@ class ImageUploadManager {
             if (processResult.success) {
                 this.displayDetectionResults(processResult);
                 this.showStatus(`Detection complete! Found ${processResult.summary.total_detections} objects`, 'success');
+                
+                // Generate recipes from detected ingredients
+                if (processResult.summary.all_detected_classes && processResult.summary.all_detected_classes.length > 0) {
+                    this.generateRecipes(processResult.summary.all_detected_classes);
+                }
             } else {
                 this.showStatus('Object detection failed: ' + processResult.message, 'error');
             }
@@ -355,6 +360,115 @@ class ImageUploadManager {
         const sizes = ['Bytes', 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    async generateRecipes(ingredients) {
+        if (!ingredients || ingredients.length === 0) {
+            return;
+        }
+
+        this.showStatus('Generating recipes from detected ingredients...', 'info');
+        
+        try {
+            const response = await fetch('http://localhost:3000/api/generate-recipes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ingredients: ingredients,
+                    num_recipes: 3
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                this.displayRecipes(result);
+                this.showStatus('Recipes generated successfully!', 'success');
+            } else {
+                this.showStatus('Recipe generation failed: ' + (result.error || result.message), 'error');
+                // Still show a message even if recipe generation fails
+                this.displayRecipeError(result.error || 'Failed to generate recipes');
+            }
+
+        } catch (error) {
+            console.error('Error generating recipes:', error);
+            this.showStatus('Error generating recipes. Please try again.', 'error');
+            this.displayRecipeError('Failed to connect to recipe generation service');
+        }
+    }
+
+    displayRecipes(recipeResult) {
+        const recipesHtml = `
+            <div class="recipes-section">
+                <h3><i class="fas fa-utensils"></i> Recipe Suggestions</h3>
+                <div class="ingredients-used">
+                    <strong>Ingredients detected:</strong>
+                    ${recipeResult.ingredients.map(ing => `<span class="ingredient-tag">${ing}</span>`).join('')}
+                </div>
+                <div class="recipes-content">
+                    <pre class="recipe-text">${this.escapeHtml(recipeResult.recipes)}</pre>
+                </div>
+            </div>
+        `;
+
+        // Remove existing recipes section if present
+        const existingRecipes = document.querySelector('.recipes-section');
+        if (existingRecipes) {
+            existingRecipes.remove();
+        }
+
+        // Insert recipes after the detection summary
+        const detectionSummary = document.querySelector('.detection-summary');
+        if (detectionSummary) {
+            detectionSummary.insertAdjacentHTML('afterend', recipesHtml);
+        } else {
+            // If no summary, insert after images section
+            const imagesSection = document.querySelector('.images-section');
+            if (imagesSection) {
+                imagesSection.insertAdjacentHTML('afterend', recipesHtml);
+            }
+        }
+
+        // Scroll to recipes section
+        const recipesSection = document.querySelector('.recipes-section');
+        if (recipesSection) {
+            recipesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    displayRecipeError(errorMessage) {
+        const errorHtml = `
+            <div class="recipes-section recipes-error">
+                <h3><i class="fas fa-exclamation-triangle"></i> Recipe Generation</h3>
+                <div class="error-message">
+                    <p>${this.escapeHtml(errorMessage)}</p>
+                    <p class="error-hint">Make sure Ollama is running and a model is installed (e.g., llama2).</p>
+                </div>
+            </div>
+        `;
+
+        const existingRecipes = document.querySelector('.recipes-section');
+        if (existingRecipes) {
+            existingRecipes.remove();
+        }
+
+        const detectionSummary = document.querySelector('.detection-summary');
+        if (detectionSummary) {
+            detectionSummary.insertAdjacentHTML('afterend', errorHtml);
+        } else {
+            const imagesSection = document.querySelector('.images-section');
+            if (imagesSection) {
+                imagesSection.insertAdjacentHTML('afterend', errorHtml);
+            }
+        }
+    }
+
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 }
 

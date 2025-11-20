@@ -319,6 +319,78 @@ app.get('/api/yolo-health', async (req, res) => {
     }
 });
 
+// Generate recipes from ingredients
+app.post('/api/generate-recipes', async (req, res) => {
+    try {
+        const { ingredients, num_recipes } = req.body;
+        
+        if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Ingredients list is required and must not be empty'
+            });
+        }
+
+        console.log(`Generating recipes for ingredients: ${ingredients.join(', ')}`);
+
+        // Call Flask API to generate recipes
+        const recipeResponse = await axios.post(`${YOLO_API_URL}/generate_recipes`, {
+            ingredients: ingredients,
+            num_recipes: num_recipes || 3
+        }, {
+            timeout: 120000 // 2 minute timeout
+        });
+
+        res.json(recipeResponse.data);
+
+    } catch (error) {
+        console.error('Error generating recipes:', error);
+        if (error.response) {
+            // Error from Flask API
+            res.status(error.response.status).json({
+                success: false,
+                message: 'Recipe generation failed',
+                error: error.response.data.error || error.message
+            });
+        } else if (error.code === 'ECONNREFUSED') {
+            res.status(500).json({
+                success: false,
+                message: 'YOLO API not available',
+                error: 'Cannot connect to recipe generation service'
+            });
+        } else if (error.code === 'ETIMEDOUT') {
+            res.status(504).json({
+                success: false,
+                message: 'Recipe generation timed out',
+                error: 'The recipe generation took too long. Please try again.'
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                message: 'Error generating recipes',
+                error: error.message
+            });
+        }
+    }
+});
+
+// Check Ollama health
+app.get('/api/ollama-health', async (req, res) => {
+    try {
+        const ollamaResponse = await axios.get(`${YOLO_API_URL}/ollama_health`);
+        res.json({
+            success: true,
+            ollama_health: ollamaResponse.data
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Ollama health check failed',
+            error: error.message
+        });
+    }
+});
+
 // Error handling middleware
 app.use((error, req, res, next) => {
     if (error instanceof multer.MulterError) {
