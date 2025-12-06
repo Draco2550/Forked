@@ -1,23 +1,87 @@
-#paths to the image folders (Make sure to use relative so it doesn't break when trying to run on someone elses machine.)
-train: ../train
-val: ../valid
-test: ../test
+train: G:/YOLOv8/Project/found-model/train/images
+val: G:/YOLOv8/Project/found-model/valid/images
+test: ../test/images
 
-
-nc: 14
-
+nc: 80
 names:
-  - banana-bag # 0
-  - banana # 1
-  - blackberries # 2
-  - raspberry # 3
-  - lemon-bag # 4
-  - lemon # 5
-  - grapes-bag # 6
-  - grapes # 7
-  - tomato-bag # 8
-  - tomato # 9
-  - apple-bag # 10 
-  - apple # 11
-  - chili-bag  # 12
-  - chili # 13
+  - almond # 0
+  - apple # 1
+  - asparagus # 2
+  - avocado # 3
+  - bacon # 4
+  - banana # 5
+  - bean # 6
+  - bean sprout # 7
+  - beef # 8
+  - beetroot # 9
+  - bell pepper # 10
+  - blackberry # 11
+  - blueberry # 12
+  - bok choy # 13
+  - bread # 14
+  - brie cheese # 15
+  - broccoli # 16
+  - cabbage # 17
+  - carrot # 18
+  - cauliflower # 19
+  - cheddar cheese # 20
+  - cheese # 21
+  - cherry # 22
+  - chicken breast # 23
+  - chicken wing # 24
+  - chili # 25
+  - chocolate # 26
+  - corn # 27
+  - cucumber # 28
+  - dry grape # 29
+  - durian # 30
+  - egg # 31
+  - eggplant # 32
+  - fish # 33
+  - garlic # 34
+  - ginger # 35
+  - grape # 36
+  - green grape # 37
+  - green pepper # 38
+  - guava # 39
+  - jalepeno # 40
+  - jam # 41
+  - kiwi # 42
+  - lemon # 43
+  - mango # 44
+  - mangoteen # 45
+  - meat ball # 46
+  - milk # 47
+  - mozarella cheese # 48
+  - mushroom # 49
+  - mussel # 50
+  - noodle # 51
+  - onion # 52
+  - orange # 53
+  - oyster # 54
+  - papaya # 55
+  - parmesan cheese # 56
+  - pasta # 57
+  - pineapple # 58
+  - pomegranate # 59
+  - pork # 60
+  - pork belly # 61
+  - pork rib # 62
+  - potato # 63
+  - pumpkin # 64
+  - raspberry # 65
+  - salad # 66
+  - salmon # 67
+  - scallop # 68
+  - shrimp # 69
+  - spring onion # 70
+  - starfruit # 71
+  - stilton cheese # 72
+  - strawberry # 73
+  - sweet potato # 74
+  - tomato # 75
+  - tuna # 76
+  - vegetable # 77
+  - watermelon # 78
+  - yogurt # 79
+
