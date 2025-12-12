@@ -1,6 +1,6 @@
 # Forked
-An AI-powered website that scans fridge or ingredient images to suggest goal-aligned meals—helping users eat smarter based on their fitness and nutrition targets.
-The mobile-responsive website for uploading ingredient images to a locally hosted object detection model. The website provides an intuitive interface for users to upload multiple images, preview them, and send them to the local object detection model.
+An AI-powered website that scans fridge or ingredient images to suggest goal-aligned meals. Helping users eat smarter based on their fitness and nutrition targets.
+Using a custom-trained local object detection model, the website provides an intuitive interface for users to upload multiple images and preview them, returning a unique list of ingredients. **Full deployment now live on Hugging Face**
 
 ## Features
 
